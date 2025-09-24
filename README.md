@@ -11,7 +11,7 @@ Incluye:
 
 ---
 
-##  Modelo Matemático — M/M/1/K
+##  Modelo Matemático 
 
 Definiciones principales:
 
