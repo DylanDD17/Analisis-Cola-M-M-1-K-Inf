@@ -10,6 +10,24 @@ Para el sistema de colas **M/M/1/K/∞** se definen las siguientes variables:
 - `N_w` : número promedio de usuarios en la cola.
 - `T_w` : tiempo promedio de espera en la cola.
 
+- - -
+
+Para $\rho \neq 1$:
+
+$$
+P_0 = \frac{1-\rho}{1-\rho^{K+1}}, \qquad
+P_n = \frac{(1-\rho)\rho^{n}}{1-\rho^{K+1}},\; n=0,1,\dots,K, \qquad
+P_K = \frac{(1-\rho)\rho^{K}}{1-\rho^{K+1}}
+$$
+
+Caso límite $\rho = 1$:
+
+$$
+P_n = \frac{1}{K+1}, \quad n = 0,1,\dots,K
+$$
+
+
+
 ---
 
 ## NS: Número de usuarios en el sistema
