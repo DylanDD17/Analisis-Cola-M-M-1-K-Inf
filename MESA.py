@@ -1,13 +1,9 @@
-# mm1k_mesa.py
+# mm1k_mesa.py 
 import random
 import math
-from mesa import Model
-from mesa.time import BaseScheduler
-from mesa.datacollection import DataCollector
 
-class MM1KModel(Model):
+class MM1KModel:
     def __init__(self, arrival_rate, service_rate, K, max_time=1000.0):
-        super().__init__()
         self.lambda_rate = arrival_rate  # λ
         self.mu = service_rate           # μ
         self.K = K                       # Capacidad máxima del sistema
@@ -26,11 +22,10 @@ class MM1KModel(Model):
         self.area_num_in_system = 0.0
         self.area_num_in_queue = 0.0
         self.last_event_time = 0.0
-        self.wait_times = []
 
         # Eventos futuros
         self.next_arrival = self.now + random.expovariate(self.lambda_rate)
-        self.next_departure = math.inf  # no hay salida hasta que alguien entre
+        self.next_departure = math.inf
 
         self.running = True
 
@@ -40,7 +35,6 @@ class MM1KModel(Model):
             self.running = False
             return
 
-        # Determinar qué ocurre primero: llegada o salida
         if self.next_arrival < self.next_departure:
             next_event_time = self.next_arrival
             event = "arrival"
@@ -48,7 +42,7 @@ class MM1KModel(Model):
             next_event_time = self.next_departure
             event = "departure"
 
-        # Actualizar área para métricas de tiempo promedio
+        # Actualizar áreas para métricas
         dt = next_event_time - self.last_event_time
         self.area_num_in_system += self.num_in_system * dt
         self.area_num_in_queue += self.num_in_queue * dt
@@ -61,7 +55,7 @@ class MM1KModel(Model):
             self.handle_departure()
 
     def handle_arrival(self):
-        if self.num_in_system < self.K:  # hay espacio en el sistema
+        if self.num_in_system < self.K:
             self.num_in_system += 1
             self.total_arrivals += 1
 
@@ -71,10 +65,8 @@ class MM1KModel(Model):
                 self.server_busy = True
                 self.next_departure = self.now + random.expovariate(self.mu)
         else:
-            # Sistema lleno -> bloqueo
             self.total_blocked += 1
 
-        # Programar la próxima llegada
         self.next_arrival = self.now + random.expovariate(self.lambda_rate)
 
     def handle_departure(self):
@@ -93,34 +85,36 @@ class MM1KModel(Model):
             self.step()
 
     def results(self):
-        lambda_eff = self.total_arrivals / self.now  # tasa de llegada efectiva
-        Ns = self.area_num_in_system / self.now
-        Nw = self.area_num_in_queue / self.now
+        lambda_eff = self.total_arrivals / self.now if self.now > 0 else 0
+        Ns = self.area_num_in_system / self.now if self.now > 0 else 0
+        Nw = self.area_num_in_queue / self.now if self.now > 0 else 0
         Ts = Ns / lambda_eff if lambda_eff > 0 else 0
         Tw = Nw / lambda_eff if lambda_eff > 0 else 0
-        rho = Ns / self.K if self.K > 0 else 0
 
         return {
             "Tiempo final": round(self.now, 3),
             "λ efectivo": round(lambda_eff, 4),
-            "ρ (utilización)": round(rho, 4),
+            "ρ (utilización)": round(Ns / self.K, 4) if self.K > 0 else 0,
             "Ns (en sistema)": round(Ns, 4),
             "Nw (en cola)": round(Nw, 4),
             "Ts (tiempo en sistema)": round(Ts, 4),
             "Tw (tiempo en cola)": round(Tw, 4),
-            "Bloqueo (%)": round(self.total_blocked / (self.total_arrivals + self.total_blocked) * 100, 2)
+            "Bloqueo (%)": round(
+                self.total_blocked / (self.total_arrivals + self.total_blocked) * 100, 2
+            ) if (self.total_arrivals + self.total_blocked) > 0 else 0,
         }
 
-if __name__ == "__main__":
-    casos = [
-        {"nombre": "Caso 1: λ<μ (estable)", "lambda": 0.5, "mu": 1.0, "K": 10},
-        {"nombre": "Caso 2: λ=μ (saturación)", "lambda": 1.0, "mu": 1.0, "K": 10},
-        {"nombre": "Caso 3: λ>μ (sobrecarga)", "lambda": 1.0, "mu": 0.5, "K": 10},
-    ]
 
-    for caso in casos:
-        print(f"\n--- {caso['nombre']} ---")
-        model = MM1KModel(caso["lambda"], caso["mu"], caso["K"], max_time=20000)
-        model.run_model()
-        for k, v in model.results().items():
-            print(f"{k}: {v}")
+# Ejecución de prueba
+casos = [
+    {"nombre": "Caso 1: λ<μ (estable)", "lambda": 0.5, "mu": 1.0, "K": 10},
+    {"nombre": "Caso 2: λ=μ (saturación)", "lambda": 1.0, "mu": 1.0, "K": 10},
+    {"nombre": "Caso 3: λ>μ (sobrecarga)", "lambda": 1.0, "mu": 0.5, "K": 10},
+]
+
+for caso in casos:
+    print(f"\n--- {caso['nombre']} ---")
+    model = MM1KModel(caso["lambda"], caso["mu"], caso["K"], max_time=20000)
+    model.run_model()
+    for k, v in model.results().items():
+        print(f"{k}: {v}")
