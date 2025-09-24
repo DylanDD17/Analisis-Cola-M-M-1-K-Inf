@@ -8,6 +8,8 @@ Estos son los **valores teóricos** calculados para tres escenarios: sistema est
 
 ## Caso 1: λ < μ (estable)
 
+<img width="954" height="621" alt="image" src="https://github.com/user-attachments/assets/8a1c2803-2034-4120-830c-e2b3537f932a" />
+
 **Parámetros:**
 - λ = 0.5  
 - μ = 1.0  
@@ -27,6 +29,8 @@ Estos son los **valores teóricos** calculados para tres escenarios: sistema est
 
 ## Caso 2: λ = μ (saturación)
 
+<img width="955" height="660" alt="image" src="https://github.com/user-attachments/assets/11cec60a-176a-4891-b190-1780bd555c4a" />
+
 **Parámetros:**
 - λ = 1.0  
 - μ = 1.0  
@@ -45,6 +49,8 @@ Estos son los **valores teóricos** calculados para tres escenarios: sistema est
 ---
 
 ## Caso 3: λ > μ (sobrecarga)
+
+<img width="956" height="631" alt="image" src="https://github.com/user-attachments/assets/d44104ee-bda5-472a-adb9-aed1c814403f" />
 
 **Parámetros:**
 - λ = 1.0  
